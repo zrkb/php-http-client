@@ -2,23 +2,23 @@
 
 namespace Zero\Http;
 
-use Psr\Http\Client\ClientInterface as PsrClientInterface;
+use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 
 interface ClientInterface
 {
     /**
      * Sets the http client.
      *
-     * @param PsrClientInterface $http
+     * @param GuzzleClientInterface $http
      */
-    public function setHttp(PsrClientInterface $http);
+    public function setHttp(GuzzleClientInterface $http);
 
     /**
      * Returns the http client.
      *
-     * @return PsrClientInterface
+     * @return GuzzleClientInterface
      */
-    public function http(): PsrClientInterface;
+    public function http(): GuzzleClientInterface;
 
     /**
      * Set the base uri.
@@ -40,60 +40,65 @@ interface ClientInterface
      *
      * @param string $method
      * @param string|UriInterface $uri
+     * @param array $params
      * @param array $headers
-     * @param resource|string|StreamInterface|null $body
-     * @param string $protocolVersion
      *
      * @return mixed
      * @throws \Exception
      */
-    public function request(string $method, string $url, array $headers = [], $body = null, $protocolVersion = '1.1');
+    public function request(
+        string $method,
+        string $url,
+        array $params = [],
+        array $headers = [],
+        array $options = []
+    );
 
     /**
      * Make a GET request.
      *
      * @param string|UriInterface $uri
+     * @param array $params
      * @param array $headers
-     * @param resource|string|StreamInterface|null $body
      *
      * @return mixed
      * @throws \Exception
      */
-    public function get(string $url, array $headers = [], $body = null);
+    public function get(string $url, array $params = [], array $headers = [], array $options = []);
 
     /**
      * Make a POST request.
      *
      * @param string|UriInterface $uri
+     * @param array $params
      * @param array $headers
-     * @param resource|string|StreamInterface|null $body
      *
      * @return mixed
      * @throws \Exception
      */
-    public function post(string $url, array $headers = [], $body = null);
+    public function post(string $url, array $params = [], array $headers = [], array $options = []);
 
     /**
      * Make a PUT request.
      *
      * @param string|UriInterface $uri
+     * @param array $params
      * @param array $headers
-     * @param resource|string|StreamInterface|null $body
      *
      * @return mixed
      * @throws \Exception
      */
-    public function put(string $url, array $headers = [], $body = null);
+    public function put(string $url, array $params = [], array $headers = [], array $options = []);
 
     /**
      * Make a DELETE request.
      *
      * @param string|UriInterface $uri
+     * @param array $params
      * @param array $headers
-     * @param resource|string|StreamInterface|null $body
      *
      * @return mixed
      * @throws \Exception
      */
-    public function delete(string $url, array $headers = [], $body = null);
+    public function delete(string $url, array $params = [], array $headers = [], array $options = []);
 }

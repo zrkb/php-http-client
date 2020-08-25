@@ -2,9 +2,10 @@
 
 namespace Zero\Http;
 
-use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Request;
-use Psr\Http\Client\ClientInterface as PsrClientInterface;
+use GuzzleHttp\RequestOptions;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 
 abstract class Client implements ClientInterface
 {
@@ -16,7 +17,7 @@ abstract class Client implements ClientInterface
     CONST DEPTH = 512;
 
     /**
-     * @var PsrClientInterface
+     * @var GuzzleClientInterface
      */
     private $http;
 
@@ -32,7 +33,7 @@ abstract class Client implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function setHttp(PsrClientInterface $http)
+    public function setHttp(GuzzleClientInterface $http)
     {
         $this->http = $http;
     }
@@ -40,7 +41,7 @@ abstract class Client implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function http(): PsrClientInterface
+    public function http(): GuzzleClientInterface
     {
         if ($this->http === null) {
             $this->http = new GuzzleClient(['base_uri' => $this->baseUri()]);
@@ -68,10 +69,18 @@ abstract class Client implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function request(string $method, string $url, array $headers = [], $body = null, $protocolVersion = '1.1')
+    public function request(string $method, string $url, array $params = [], array $headers = [], array $options = [])
     {
-        $request = new Request($method, $url, $headers, $body, $protocolVersion);
-        $response = $this->http()->sendRequest($request);
+        if (sizeOf($params) > 0) {
+            $contentKey = strtoupper($method) == 'GET' ? RequestOptions::QUERY : RequestOptions::JSON;
+            $options = [$contentKey => $params] + $options;
+        }
+
+        if (sizeof($headers) > 0) {
+            $options = [RequestOptions::HEADERS => $headers] + $options;
+        }
+
+        $response = $this->http()->request($method, $url, $options);
 
         $body = json_decode((string) $response->getBody(), false, static::DEPTH, JSON_THROW_ON_ERROR);
 
@@ -81,32 +90,32 @@ abstract class Client implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function get(string $url, array $headers = [], $body = null)
+    public function get(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('GET', $url, $headers, $body);
+        return $this->request('GET', $url, $params, $headers, $options);
     }
 
     /**
      * @inheritDoc
      */
-    public function post(string $url, array $headers = [], $body = null)
+    public function post(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('POST', $url, $headers, $body);
+        return $this->request('POST', $url, $params, $headers, $options);
     }
 
     /**
      * @inheritDoc
      */
-    public function put(string $url, array $headers = [], $body = null)
+    public function put(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('PUT', $url, $headers, $body);
+        return $this->request('PUT', $url, $params, $headers, $options);
     }
 
     /**
      * @inheritDoc
      */
-    public function delete(string $url, array $headers = [], $body = null)
+    public function delete(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('DELETE', $url, $headers, $body);
+        return $this->request('DELETE', $url, $params, $headers, $options);
     }
 }
