@@ -1,41 +1,39 @@
 <?php
 
-namespace Http;
+namespace Zero\Http;
 
-use Http\Client\HttpClient;
-use Http\Message\MessageFactory;
+use Psr\Http\Client\ClientInterface as PsrClientInterface;
 
 interface ClientInterface
 {
     /**
      * Sets the http client.
      *
-     * @param string $http
-     *
-     * @return ClientInterface
+     * @param PsrClientInterface $http
      */
-    public function setHttp(HttpClient $http);
+    public function setHttp(PsrClientInterface $http);
 
     /**
      * Returns the http client.
      *
-     * @return Http\Client\HttpClient
+     * @return PsrClientInterface
      */
-    public function http(): HttpClient;
+    public function http(): PsrClientInterface;
 
     /**
-     * @param MessageFactory $messageFactory
+     * Set the base uri.
      *
-     * @return \Http\Message\MessageFactory
+     * @param string $baseUri
+     * @return string
      */
-    public function setMessageFactory(MessageFactory $messageFactory);
+    public function setBaseUri(string $baseUri);
 
     /**
-     * Returns the message factory.
+     * Base uri for client.
      *
-     * @return \Http\Message\MessageFactory
+     * @return string
      */
-    public function messageFactory();
+    public function baseUri(): string;
 
     /**
      * Make an http request.
@@ -98,11 +96,4 @@ interface ClientInterface
      * @throws \Exception
      */
     public function delete(string $url, array $headers = [], $body = null);
-
-    /**
-     * Base uri for client.
-     *
-     * @return string
-     */
-    public function baseUri();
 }

@@ -1,34 +1,38 @@
 <?php
 
-namespace Http;
+namespace Zero\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
-use Http\Adapter\Guzzle\Client as GuzzleAdapter;
-use Http\ClientInterface;
-use Http\Client\HttpClient;
-use Http\Discovery\Psr17FactoryDiscovery;
-use Http\Message\MessageFactory;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Client\ClientInterface as PsrClientInterface;
 
 abstract class Client implements ClientInterface
 {
     /**
-     * ######################################################
+     * User specified recursion depth for json_encode().
+     *
+     * @var int
      */
+    CONST DEPTH = 512;
 
     /**
-     * @var \Http\Client\HttpClient
+     * @var PsrClientInterface
      */
     private $http;
 
     /**
-     * @var \Http\Message\MessageFactory
+     * @var string
      */
-    private $requestFactory;
+    private $baseUri;
+
+    public function __construct(string $baseUri = null) {
+        $this->baseUri = $baseUri;
+    }
 
     /**
      * @inheritDoc
      */
-    public function setHttp(HttpClient $http)
+    public function setHttp(PsrClientInterface $http)
     {
         $this->http = $http;
     }
@@ -36,13 +40,10 @@ abstract class Client implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function http(): HttpClient
+    public function http(): PsrClientInterface
     {
         if ($this->http === null) {
-            $guzzle = new GuzzleClient(['base_uri' => $this->baseUri()]);
-            $adapter = new GuzzleAdapter($guzzle);
-
-            $this->http = $adapter;
+            $this->http = new GuzzleClient(['base_uri' => $this->baseUri()]);
         }
 
         return $this->http;
@@ -51,23 +52,17 @@ abstract class Client implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function setMessageFactory(MessageFactory $messageFactory)
+    public function setBaseUri(string $baseUri)
     {
-        $this->messageFactory = $messageFactory;
-
-        return $this;
+        $this->baseUri = $baseUri;
     }
 
     /**
      * @inheritDoc
      */
-    public function messageFactory()
+    public function baseUri(): string
     {
-        if ($this->messageFactory === null) {
-            $this->messageFactory = Psr17FactoryDiscovery::findRequestFactory();
-        }
-
-        return $this->messageFactory;
+        return $this->baseUri;
     }
 
     /**
@@ -75,9 +70,12 @@ abstract class Client implements ClientInterface
      */
     public function request(string $method, string $url, array $headers = [], $body = null, $protocolVersion = '1.1')
     {
-        $request = $this->messageFactory()->createRequest($method, $url, $headers, $body, $protocolVersion);
+        $request = new Request($method, $url, $headers, $body, $protocolVersion);
+        $response = $this->http()->sendRequest($request);
 
-        return $this->http()->sendRequest($request);
+        $body = json_decode((string) $response->getBody(), false, static::DEPTH, JSON_THROW_ON_ERROR);
+
+        return $body;
     }
 
     /**
@@ -111,9 +109,4 @@ abstract class Client implements ClientInterface
     {
         return $this->request('DELETE', $url, $headers, $body);
     }
-
-    /**
-     * @inheritDoc
-     */
-    abstract public function baseUri();
 }
