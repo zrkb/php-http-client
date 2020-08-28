@@ -2,12 +2,11 @@
 
 namespace Zero\Http;
 
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 
-abstract class Client implements ClientInterface
+class Client implements ClientInterface
 {
     /**
      * User specified recursion depth for json_encode().
