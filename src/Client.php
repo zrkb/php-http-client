@@ -6,7 +6,7 @@ use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 
-class Client implements ClientInterface
+class Client extends GuzzleClient implements ClientInterface
 {
     /**
      * User specified recursion depth for json_encode().
@@ -24,10 +24,6 @@ class Client implements ClientInterface
      * @var string
      */
     private $baseUri;
-
-    public function __construct(string $baseUri = null) {
-        $this->baseUri = $baseUri;
-    }
 
     /**
      * @inheritDoc
