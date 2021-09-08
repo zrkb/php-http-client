@@ -36,7 +36,7 @@ interface ClientInterface
     public function baseUri(): string;
 
     /**
-     * Make an http request.
+     * Execute an http request.
      *
      * @param string $method
      * @param string|UriInterface $uri
@@ -46,7 +46,7 @@ interface ClientInterface
      * @return mixed
      * @throws \Exception
      */
-    public function request(
+    public function executeRequest(
         string $method,
         string $url,
         array $params = [],

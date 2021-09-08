@@ -64,7 +64,7 @@ class Client extends GuzzleClient implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function request(string $method, string $url, array $params = [], array $headers = [], array $options = [])
+    public function executeRequest(string $method, string $url, array $params = [], array $headers = [], array $options = [])
     {
         if (sizeOf($params) > 0) {
             $contentKey = strtoupper($method) == 'GET' ? RequestOptions::QUERY : RequestOptions::JSON;
@@ -75,7 +75,7 @@ class Client extends GuzzleClient implements ClientInterface
             $options = [RequestOptions::HEADERS => $headers] + $options;
         }
 
-        $response = $this->http()->request($method, $url, $options);
+        $response = $this->http()->executeRequest($method, $url, $options);
 
         $body = json_decode((string) $response->getBody(), false, static::DEPTH, JSON_THROW_ON_ERROR);
 
@@ -87,7 +87,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function get(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('GET', $url, $params, $headers, $options);
+        return $this->executeRequest('GET', $url, $params, $headers, $options);
     }
 
     /**
@@ -95,7 +95,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function post(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('POST', $url, $params, $headers, $options);
+        return $this->executeRequest('POST', $url, $params, $headers, $options);
     }
 
     /**
@@ -103,7 +103,7 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function put(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('PUT', $url, $params, $headers, $options);
+        return $this->executeRequest('PUT', $url, $params, $headers, $options);
     }
 
     /**
@@ -111,6 +111,6 @@ class Client extends GuzzleClient implements ClientInterface
      */
     public function delete(string $url, array $params = [], array $headers = [], array $options = [])
     {
-        return $this->request('DELETE', $url, $params, $headers, $options);
+        return $this->executeRequest('DELETE', $url, $params, $headers, $options);
     }
 }
