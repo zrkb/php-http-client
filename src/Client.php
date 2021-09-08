@@ -4,7 +4,6 @@ namespace Zero\Http;
 
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 
 class Client implements ClientInterface
 {
@@ -16,7 +15,7 @@ class Client implements ClientInterface
     CONST DEPTH = 512;
 
     /**
-     * @var GuzzleClientInterface
+     * @var GuzzleClient
      */
     private $http;
 
@@ -25,15 +24,15 @@ class Client implements ClientInterface
      */
     private $baseUri;
 
-    public function __construct(string $baseUri, array $config = []) {
+    public function __construct(string $baseUri = null, array $config = []) {
         $this->baseUri = $baseUri;
-        $this->http = new GuzzleClient($config + ['base_uri' => $baseUri]);
+        $this->http = new GuzzleClient(['base_uri' => $baseUri] + $config);
     }
 
     /**
      * @inheritDoc
      */
-    public function setHttp(GuzzleClientInterface $http)
+    public function setHttp(GuzzleClient $http)
     {
         $this->http = $http;
     }
@@ -41,7 +40,7 @@ class Client implements ClientInterface
     /**
      * @inheritDoc
      */
-    public function http(): GuzzleClientInterface
+    public function http(): GuzzleClient
     {
         return $this->http;
     }

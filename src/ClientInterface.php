@@ -2,23 +2,23 @@
 
 namespace Zero\Http;
 
-use GuzzleHttp\ClientInterface as GuzzleClientInterface;
+use GuzzleHttp\Client as GuzzleClient;
 
 interface ClientInterface
 {
     /**
      * Sets the http client.
      *
-     * @param GuzzleClientInterface $http
+     * @param GuzzleClient $http
      */
-    public function setHttp(GuzzleClientInterface $http);
+    public function setHttp(GuzzleClient $http);
 
     /**
      * Returns the http client.
      *
-     * @return GuzzleClientInterface
+     * @return GuzzleClient
      */
-    public function http(): GuzzleClientInterface;
+    public function http(): GuzzleClient;
 
     /**
      * Set the base uri.
