@@ -25,8 +25,9 @@ class Client implements ClientInterface
      */
     private $baseUri;
 
-    public function __construct(array $config = []) {
-        $this->http = new GuzzleClient($config + ['base_uri' => $this->baseUri()]);
+    public function __construct(string $baseUri, array $config = []) {
+        $this->baseUri = $baseUri;
+        $this->http = new GuzzleClient($config + ['base_uri' => $baseUri]);
     }
 
     /**
